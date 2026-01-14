@@ -1,0 +1,52 @@
+name: Build oop
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ dev ]
+
+jobs:
+  build-linux-32bit:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build]')
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Enable 32-bit toolchain
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt update
+          sudo apt install -y \
+            build-essential \
+            gcc-multilib \
+            g++-multilib \
+            git \
+            python3 \
+            libglew-dev:i386 \
+            libsdl2-dev:i386 \
+            libz-dev:i386 \
+            libcurl4-openssl-dev:i386 \
+            zip
+
+      - name: Build the game (32-bit)
+        run: |
+          make -j$(nproc) CFLAGS="-m32" CXXFLAGS="-m32"
+
+      - name: Generate hash
+        run: |
+          cd tools
+          g++ -std=c++17 -m32 -o hash_file hash_file.cpp
+          echo "::notice ::$(./hash_file ../build/us_pc/sm64coopdx)"
+
+      - name: Zip the game
+        run: |
+          cd ./build/us_pc
+          zip -r sm64coopdx_Linux_32bit.zip dynos lang mods palettes libdiscord_game_sdk.so sm64coopdx
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sm64coopdx-linux-32bit
+          path: ./build/us_pc/sm64coopdx_Linux_32bit.zip
