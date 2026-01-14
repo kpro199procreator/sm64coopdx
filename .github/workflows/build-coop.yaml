@@ -1,4 +1,4 @@
-name: Build coop
+name: Build cop
 
 on:
   workflow_dispatch:
