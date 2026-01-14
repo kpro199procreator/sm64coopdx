@@ -16,19 +16,23 @@ jobs:
 
       - name: Enable 32-bit toolchain
         run: |
-          sudo dpkg --add-architecture i386
-          sudo apt update
-          sudo apt install -y \
+            sudo dpkg --add-architecture i386
+            sudo apt update
+            sudo apt install -y \
             build-essential \
             gcc-multilib \
             g++-multilib \
             git \
             python3 \
-            libglew-dev:i386 \
-            libsdl2-dev:i386 \
-            libz-dev:i386 \
-            libcurl4-openssl-dev:i386 \
-            zip
+            libglew-dev \
+            libsdl2-dev \
+            libz-dev \
+            libcurl4-openssl-dev \
+            zip \
+            libglew2.2:i386 \
+            libsdl2-2.0-0:i386 \
+            libcurl4:i386 \
+            zlib1g:i386
 
       - name: Build the game (32-bit)
         run: |
